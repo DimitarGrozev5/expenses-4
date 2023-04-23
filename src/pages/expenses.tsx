@@ -1,7 +1,86 @@
 import { type NextPage } from "next";
 
 const ExpensesPage: NextPage = () => {
-  return <>Expenses</>;
+  return (
+    <>
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+      Expenses
+      <br />
+    </>
+  );
 };
 
 export default ExpensesPage;

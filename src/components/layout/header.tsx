@@ -22,7 +22,7 @@ const Header = () => {
   };
 
   return (
-    <header className="absolute left-0 right-0 top-0 flex h-20 items-center bg-gray-200 px-4 shadow-md">
+    <header className="fixed left-0 right-0 top-0 flex h-20 items-center bg-gray-200 px-4 shadow-md">
       <h1 className="flex-1 text-3xl font-bold text-gray-800">Expenses</h1>
       {/* {isLoggedIn && (
         <Tooltip label="Sign out" side="left">
