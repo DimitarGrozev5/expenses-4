@@ -1,11 +1,63 @@
-import { type NextPage } from "next";
+import {
+  type InferGetServerSidePropsType,
+  type GetServerSidePropsContext,
+  type NextPage,
+} from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { getProviders, signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "~/utils/api";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "~/server/auth";
+import Card from "~/components/layout/card";
+import Button from "~/components/layout/button";
 
-const Home: NextPage = () => {
+const Home: NextPage<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = ({ providers }) => {
+  return (
+    <>
+      <Card>
+        Expenses is an app that helps you track your personal expenses.
+        It&apos;s meant to be used exlusively by the developer of the app and is
+        not maintained to a standard that would make it usable and secure for
+        the wider public. Use at your own risk.
+      </Card>
+      <Card>
+        {Object.values(providers).map((provider) => (
+          <div key={provider.name}>
+            <Button fullWidth onClick={() => void signIn(provider.id)}>
+              Sign in with {provider.name}
+            </Button>
+          </div>
+        ))}
+      </Card>
+    </>
+  );
+};
+
+export default Home;
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  // If the user is already logged in, redirect.
+  // Note: Make sure not to redirect to the same page
+  // To avoid an infinite loop!
+  if (session) {
+    return { redirect: { destination: "/expenses" } };
+  }
+
+  const providers = await getProviders();
+
+  return {
+    props: { signedIn: !!session, providers: providers ?? [] },
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const HomeExample: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   return (
@@ -56,14 +108,14 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+// export default Home;
 
 const AuthShowcase: React.FC = () => {
   const { data: sessionData } = useSession();
 
   const { data: secretMessage } = api.example.getSecretMessage.useQuery(
     undefined, // no input
-    { enabled: sessionData?.user !== undefined },
+    { enabled: sessionData?.user !== undefined }
   );
 
   return (

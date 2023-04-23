@@ -57,7 +57,7 @@ model User {
     mainAccountId String?         @unique
     mainAccount   ExpenseAccount? @relation("MainAccount", fields: [mainAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-    lastPeriodStart DateTime
+    lastPeriodStart DateTime @default(now())
 
     accounts       Account[]
     sessions       Session[]
