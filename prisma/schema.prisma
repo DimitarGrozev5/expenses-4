@@ -53,8 +53,17 @@ model User {
     email         String?   @unique
     emailVerified DateTime?
     image         String?
-    accounts      Account[]
-    sessions      Session[]
+
+    mainAccountId String?         @unique
+    mainAccount   ExpenseAccount? @relation("MainAccount", fields: [mainAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    lastPeriodStart DateTime
+
+    accounts       Account[]
+    sessions       Session[]
+    ExpenseAccount ExpenseAccount[] @relation("ExpenseAccountForUser")
+    BudgetCategory BudgetCategory[]
+    Expense        Expense[]
 }
 
 model VerificationToken {
@@ -63,4 +72,68 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model ExpenseAccount {
+    id String @id @default(cuid())
+
+    userId String
+    user   User   @relation("ExpenseAccountForUser", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+    initAmount Decimal @default(0)
+    credit     Decimal @default(0)
+
+    mainAccountForUser User? @relation("MainAccount")
+
+    @@index([userId])
+}
+
+model BudgetCategory {
+    id String @id @default(cuid())
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    name                String
+    montlyInput         Decimal
+    startOfPeriodAmount Decimal
+    Expense             Expense[]
+
+    @@index([userId])
+}
+
+model Expense {
+    id String @id @default(cuid())
+
+    createdOn DateTime
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    categoryId String
+    category   BudgetCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+    amount  Decimal
+    reasons ReasonOnExpense[]
+
+    @@index([userId])
+    @@index([categoryId])
+}
+
+model ReasonOnExpense {
+    id String @id @default(cuid())
+
+    expenseId String
+    expense   Expense @relation(fields: [expenseId], references: [id])
+
+    reasonId String
+    reason   Reason @relation(fields: [reasonId], references: [id])
+
+    @@index([expenseId])
+    @@index([reasonId])
+}
+
+model Reason {
+    id              String            @id @default(cuid())
+    ReasonOnExpense ReasonOnExpense[]
 }
