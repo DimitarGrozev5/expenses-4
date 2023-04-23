@@ -5,17 +5,27 @@ import {
 } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
+
 import { getProviders, signIn, signOut, useSession } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
 
 import { api } from "~/utils/api";
-import { getServerSession } from "next-auth/next";
 import { authOptions } from "~/server/auth";
+
 import Card from "~/components/layout/card";
 import Button from "~/components/layout/button";
+import { useEffect } from "react";
 
 const Home: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ providers }) => {
+> = ({ signedIn, providers }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (signedIn) void router.push("/expenses");
+  }, [router, signedIn]);
+
   return (
     <>
       <Card>
@@ -41,13 +51,6 @@ export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
-
-  // If the user is already logged in, redirect.
-  // Note: Make sure not to redirect to the same page
-  // To avoid an infinite loop!
-  if (session) {
-    return { redirect: { destination: "/expenses" } };
-  }
 
   const providers = await getProviders();
 
