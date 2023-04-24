@@ -1,8 +1,19 @@
-type Props = React.PropsWithChildren;
+import clsx from "clsx";
 
-const Card: React.FC<Props> = ({ children }) => {
+type Props = {
+  noPadding?: boolean;
+  className?: HTMLDivElement["className"];
+} & React.PropsWithChildren;
+
+const Card: React.FC<Props> = ({ noPadding, children, className = "" }) => {
   return (
-    <div className="flex flex-col rounded-md bg-gray-50 p-4 shadow-sm">
+    <div
+      className={clsx(
+        "relative flex flex-col overflow-hidden rounded-md bg-gray-50 shadow-sm",
+        className,
+        !noPadding && "p-4"
+      )}
+    >
       {children}
     </div>
   );

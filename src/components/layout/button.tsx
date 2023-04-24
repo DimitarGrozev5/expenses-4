@@ -2,10 +2,13 @@ import type { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
 
 import clsx from "clsx";
 
-type Props = { fullWidth?: boolean } & DetailedHTMLProps<
+type Props = {
+  fullWidth?: boolean;
+  children: React.ReactNode;
+} & DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
-> & { children: React.ReactNode };
+>;
 
 const Button: React.FC<Props> = ({
   fullWidth = false,
