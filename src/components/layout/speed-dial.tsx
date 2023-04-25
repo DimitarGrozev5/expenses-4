@@ -2,10 +2,9 @@ import { useState } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
 import ClearIcon from "@mui/icons-material/Clear";
-import clsx from "clsx";
 
 type Props = {
-  actions: {
+  actions : {
     label: string;
     icon: React.ReactElement;
     action: () => void;

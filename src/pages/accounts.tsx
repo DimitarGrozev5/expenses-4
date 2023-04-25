@@ -5,6 +5,8 @@ import AddIcon from "@mui/icons-material/Add";
 
 import Card from "~/components/layout/card";
 import SpeedDial from "~/components/layout/speed-dial";
+import { useDialog } from "~/components/layout/dialog";
+import NewAccountDialog from "~/components/dialogs/new-account-dialog";
 
 // Utility fn that calculates flex-grow prop for initAmount
 const initFlex = (acc: ExpenseAccount) => {
@@ -35,6 +37,8 @@ const AccountsPage: NextPage = () => {
       userId: "1",
     },
   ];
+
+  const newAccountDialogCtrl = useDialog();
 
   return (
     <>
@@ -97,12 +101,12 @@ const AccountsPage: NextPage = () => {
           {
             label: "Add account",
             icon: <AddIcon />,
-            action: () => {
-              console.log("test");
-            },
+            action: newAccountDialogCtrl.handleOpen,
           },
         ]}
       />
+
+      <NewAccountDialog dialogControl={newAccountDialogCtrl} />
     </>
   );
 };
