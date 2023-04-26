@@ -31,7 +31,7 @@ const Dialog: React.FC<Props> = ({
     <RadixDialog.Root open={control.open} onOpenChange={handleOpenChange}>
       <RadixDialog.Portal>
         <RadixDialog.Overlay className="fixed inset-0 z-40 bg-black bg-opacity-50 backdrop-blur-sm" />
-        <RadixDialog.Content className="h-max-[70vh] fixed inset-x-0 bottom-0 z-50 flex flex-col items-stretch overflow-auto rounded-t-lg bg-gray-50 p-4 pt-9">
+        <RadixDialog.Content className="fixed inset-x-0 bottom-0 z-50 flex max-h-[95vh] flex-col items-stretch overflow-auto rounded-t-lg bg-gray-50 p-4 pt-9">
           <RadixDialog.Title className="absolute left-4 top-3 text-lg font-bold">
             {title}
           </RadixDialog.Title>

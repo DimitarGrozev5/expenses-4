@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { AddFundsToAccountSchema } from "~/components/forms/add-funds-to-account-form";
 import { NewAccountSchema } from "~/components/forms/new-account-form.types";
+import { TransferFundsSchema } from "~/components/forms/transfer-funds-form";
 
 import {
   createTRPCRouter,
@@ -101,6 +102,72 @@ export const expensesAccountRouter = createTRPCRouter({
         });
 
         return result;
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred, please try again later.",
+          cause: error,
+        });
+      }
+    }),
+
+  transferFunds: protectedProcedure
+    .input(TransferFundsSchema)
+    .mutation(async ({ ctx, input }) => {
+      if (input.fromAccountId === null || input.toAccountId === null) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Please select both a *from* account and a *to* account",
+        });
+      }
+
+      if (input.fromAccountId === input.toAccountId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "From account and to account must be different",
+        });
+      }
+
+      try {
+        await ctx.prisma.$transaction(async (tr) => {
+          if (input.fromAccountId === null || input.toAccountId === null) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Please select both a *from* account and a *to* account",
+            });
+          }
+
+          const accFrom = await tr.expenseAccount.update({
+            where: { id: input.fromAccountId },
+            data: {
+              credit: { increment: input.amount },
+            },
+          });
+          const accTo = await tr.expenseAccount.update({
+            where: { id: input.toAccountId },
+            data: {
+              credit: { decrement: input.amount },
+            },
+          });
+
+          // Check if balance has reached zero in one of the accounts
+          const accFromBalance =
+            accFrom.initAmount.toNumber() + accFrom.credit.toNumber();
+          const accToBalance =
+            accTo.initAmount.toNumber() + accTo.credit.toNumber();
+
+          if (accFromBalance < 0 || accToBalance < 0) {
+            throw new TRPCError({
+              code: "UNPROCESSABLE_CONTENT",
+              message:
+                "If you transfer this amount, your account will go bellow zero",
+            });
+          }
+        });
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;

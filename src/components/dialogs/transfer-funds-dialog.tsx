@@ -4,7 +4,6 @@ import Dialog from "../layout/dialog";
 import { useForm } from "react-hook-form";
 import ButtonPlain from "../layout/button-plain";
 import { api } from "~/utils/api";
-import type { NewAccountFormData } from "../forms/new-account-form.types";
 import { getQueryKey } from "@trpc/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import TransferFundsForm, {
@@ -18,31 +17,50 @@ const TransferFundsDialog: React.FC<Props> = ({ dialogControl }) => {
     control,
     handleSubmit,
     reset: resetForm,
+    watch,
   } = useForm<TransferFundsFormData>({
     defaultValues: { fromAccountId: null, toAccountId: null, amount: 0 },
   });
 
   const {
-    mutate: addAccount,
-    isLoading: addingAccount,
-    isSuccess: addedAccount,
+    mutate: transferFunds,
+    isLoading: transferingFunds,
+    isSuccess: transferedFunds,
     error,
-  } = api.account.addAccount.useMutation();
+    reset: resetMutation,
+  } = api.account.transferFunds.useMutation();
 
   const queryClient = useQueryClient();
 
+  const fromAccountId = watch("fromAccountId") ?? undefined;
+  const toAccountId = watch("toAccountId") ?? undefined;
+
   useEffect(() => {
-    if (addedAccount) {
-      const invalidationKeys = getQueryKey(api.account.getAll);
-      void queryClient.invalidateQueries(invalidationKeys);
+    if (transferedFunds) {
+      const invalidationKeys1 = getQueryKey(api.account.getAll);
+      const invalidationKeys2 = getQueryKey(api.account.getById, fromAccountId);
+      const invalidationKeys3 = getQueryKey(api.account.getById, toAccountId);
+
+      void queryClient.invalidateQueries(invalidationKeys1);
+      void queryClient.invalidateQueries(invalidationKeys2);
+      void queryClient.invalidateQueries(invalidationKeys3);
 
       dialogControl.handleClose();
       resetForm();
+      resetMutation();
     }
-  }, [addedAccount, dialogControl, queryClient, resetForm]);
+  }, [
+    transferedFunds,
+    dialogControl,
+    queryClient,
+    resetForm,
+    resetMutation,
+    fromAccountId,
+    toAccountId,
+  ]);
 
   const submitHandler = handleSubmit((data: TransferFundsFormData) => {
-    // addAccount(data);
+    transferFunds(data);
   });
 
   return (
@@ -54,7 +72,7 @@ const TransferFundsDialog: React.FC<Props> = ({ dialogControl }) => {
         <ButtonPlain
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={submitHandler}
-          loading={addingAccount}
+          loading={transferingFunds}
         >
           Transfer amount
         </ButtonPlain>

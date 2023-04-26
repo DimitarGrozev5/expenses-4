@@ -26,11 +26,10 @@ const TransferFundsForm: React.FC<Props> = ({ formControl }) => {
         control={formControl}
         name="fromAccountId"
         rules={{
-          validate: (val) => {
-            console.log(val);
-
-            if (val !== null) return;
-            return "Please select an account";
+          validate: (val, ctx) => {
+            if (val === null) return "Please select an account";
+            if (val === ctx.toAccountId)
+              return "From and To accounts must be different";
           },
         }}
         render={({ field: { value, onChange }, fieldState: { error } }) => (
@@ -70,9 +69,10 @@ const TransferFundsForm: React.FC<Props> = ({ formControl }) => {
         control={formControl}
         name="toAccountId"
         rules={{
-          validate: (val) => {
-            if (val !== null) return true;
-            return "Please select an account";
+          validate: (val, ctx) => {
+            if (val === null) return "Please select an account";
+            if (val === ctx.fromAccountId)
+              return "From and To accounts must be different";
           },
         }}
         render={({ field: { value, onChange }, fieldState: { error } }) => (
