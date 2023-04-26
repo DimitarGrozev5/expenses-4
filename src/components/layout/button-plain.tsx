@@ -1,9 +1,10 @@
 import type { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
 
 import clsx from "clsx";
+import { LinearProgress } from "@mui/material";
 
 type Props = {
-  fullWidth?: boolean;
+  loading?: boolean;
   children: React.ReactNode;
 } & DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -11,21 +12,23 @@ type Props = {
 >;
 
 const ButtonPlain: React.FC<Props> = ({
-  fullWidth = false,
+  loading,
   children,
   className,
   ...props
 }) => {
   return (
     <button
+      disabled={loading}
       {...props}
       className={clsx(
-        "text-gray-600",
-        fullWidth && "w-full",
+        "relative text-gray-600",
+        loading && "opacity-50",
         className
       )}
     >
       {children}
+      {loading && <LinearProgress className="absolute inset-x-0 bottom-0" />}
     </button>
   );
 };

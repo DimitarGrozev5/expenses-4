@@ -1,11 +1,7 @@
 import { type Control, Controller } from "react-hook-form";
 import NumberInput from "../inputs/number-input";
 import TextInput from "../inputs/text-input";
-
-export type NewAccountFormData = {
-  name: string;
-  initValue: number;
-};
+import type { NewAccountFormData } from "./new-account-form.types";
 
 type Props = {
   formControl: Control<NewAccountFormData>;
