@@ -24,6 +24,15 @@ export const expensesAccountRouter = createTRPCRouter({
       });
     }),
 
+  findByName: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.expenseAccount.findMany({
+        where: { name: { contains: input } },
+        orderBy: { accountOrder: "asc" },
+      });
+    }),
+
   addAccount: protectedProcedure
     .input(NewAccountSchema)
     .mutation(async ({ ctx, input }) => {

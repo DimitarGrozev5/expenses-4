@@ -1,5 +1,7 @@
 import { type NextPage } from "next";
+
 import AddIcon from "@mui/icons-material/Add";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 
 import Card from "~/components/layout/card";
 import SpeedDial from "~/components/layout/speed-dial";
@@ -8,11 +10,13 @@ import NewAccountDialog from "~/components/dialogs/new-account-dialog";
 import { api } from "~/utils/api";
 import { Skeleton } from "@mui/material";
 import AccountMainCard from "~/components/specific/account-main-card";
+import TransferFundsDialog from "~/components/dialogs/transfer-funds-dialog";
 
 const AccountsPage: NextPage = () => {
   const { data: accounts, isLoading, error } = api.account.getAll.useQuery();
 
   const newAccountDialogCtrl = useDialog();
+  const transferFundsDialogCtrl = useDialog();
 
   return (
     <>
@@ -37,6 +41,13 @@ const AccountsPage: NextPage = () => {
 
       <SpeedDial
         actions={[
+          accounts && accounts.length > 1
+            ? {
+                label: "Transfer funds",
+                icon: <SwapHorizIcon />,
+                action: transferFundsDialogCtrl.handleOpen,
+              }
+            : null,
           {
             label: "Add account",
             icon: <AddIcon />,
@@ -46,6 +57,7 @@ const AccountsPage: NextPage = () => {
       />
 
       <NewAccountDialog dialogControl={newAccountDialogCtrl} />
+      <TransferFundsDialog dialogControl={transferFundsDialogCtrl} />
     </>
   );
 };

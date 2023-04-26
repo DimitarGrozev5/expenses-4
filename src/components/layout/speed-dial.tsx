@@ -4,11 +4,11 @@ import AddIcon from "@mui/icons-material/Add";
 import ClearIcon from "@mui/icons-material/Clear";
 
 type Props = {
-  actions : {
+  actions: ({
     label: string;
     icon: React.ReactElement;
     action: () => void;
-  }[];
+  } | null)[];
 };
 
 const SpeedDial: React.FC<Props> = ({ actions }) => {
@@ -23,22 +23,24 @@ const SpeedDial: React.FC<Props> = ({ actions }) => {
     <>
       <div className="fixed bottom-24 right-5 z-50 flex flex-col items-end gap-8">
         {isOpen &&
-          actions.map((action) => (
-            <div
-              key={action.label}
-              className="flex items-center justify-end gap-4"
-            >
-              <div className="rounded-md border-gray-300 bg-gray-200 px-2 py-1 text-gray-800">
-                {action.label}
-              </div>
-              <button
-                className="mr-2 h-12 w-12 rounded-full border border-gray-300 bg-gray-200 text-gray-800"
-                onClick={handleAction(action.action)}
+          actions.map((action) =>
+            action === null ? null : (
+              <div
+                key={action.label}
+                className="flex items-center justify-end gap-4"
               >
-                {action.icon}
-              </button>
-            </div>
-          ))}
+                <div className="rounded-md border-gray-300 bg-gray-200 px-2 py-1 text-gray-800">
+                  {action.label}
+                </div>
+                <button
+                  className="mr-2 h-12 w-12 rounded-full border border-gray-300 bg-gray-200 text-gray-800"
+                  onClick={handleAction(action.action)}
+                >
+                  {action.icon}
+                </button>
+              </div>
+            )
+          )}
         <div>
           <button
             className={
