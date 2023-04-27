@@ -2,6 +2,7 @@ import { type Control, Controller } from "react-hook-form";
 import NumberInput from "../inputs/number-input";
 import TextInput from "../inputs/text-input";
 import { z } from "zod";
+import Switch from "../inputs/switch";
 
 export const NewCategorySchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -11,6 +12,7 @@ export const NewCategorySchema = z.object({
   initAmount: z
     .number()
     .gte(0, "Initial amount must be greater than or equal to 0"),
+  trackDaily: z.boolean(),
 });
 
 export type NewCategoryFormData = z.infer<typeof NewCategorySchema>;
@@ -87,6 +89,18 @@ const NewCategoryForm: React.FC<Props> = ({ formControl }) => {
             label="Initial amount"
             helperText={error?.message}
             error={!!error}
+          />
+        )}
+      />
+
+      <Controller
+        control={formControl}
+        name="trackDaily"
+        render={({ field: { value, onChange } }) => (
+          <Switch
+            label="Track daily expenses"
+            checked={value}
+            onChange={onChange}
           />
         )}
       />

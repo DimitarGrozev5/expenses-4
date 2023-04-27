@@ -18,7 +18,12 @@ const NewCategoryDialog: React.FC<Props> = ({ dialogControl }) => {
     handleSubmit,
     reset: resetForm,
   } = useForm<NewCategoryFormData>({
-    defaultValues: { name: "", montlyInput: 0, initAmount: 0 },
+    defaultValues: {
+      name: "",
+      montlyInput: 0,
+      initAmount: 0,
+      trackDaily: false,
+    },
   });
 
   const {

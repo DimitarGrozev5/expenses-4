@@ -100,6 +100,7 @@ model BudgetCategory {
     montlyInput         Decimal
     startOfPeriodAmount Decimal
     categoryOrder       Int
+    trackDaily          Boolean
 
     Expense Expense[]
 
