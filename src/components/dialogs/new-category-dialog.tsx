@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import type { DialogControl } from "../layout/dialog";
-import NewAccountForm from "../forms/new-account-form";
 import Dialog from "../layout/dialog";
 import { useForm } from "react-hook-form";
 import ButtonPlain from "../layout/button-plain";
 import { api } from "~/utils/api";
 import { getQueryKey } from "@trpc/react-query";
 import { useQueryClient } from "@tanstack/react-query";
-import { type NewCategoryFormData } from "../forms/new-category-form";
+import NewCategoryForm, {
+  type NewCategoryFormData,
+} from "../forms/new-category-form";
 
 type Props = { dialogControl: DialogControl };
 
@@ -17,7 +18,7 @@ const NewCategoryDialog: React.FC<Props> = ({ dialogControl }) => {
     handleSubmit,
     reset: resetForm,
   } = useForm<NewCategoryFormData>({
-    defaultValues: { name: "", initValue: 0 },
+    defaultValues: { name: "", montlyInput: 0, initAmount: 0 },
   });
 
   const {
@@ -47,7 +48,7 @@ const NewCategoryDialog: React.FC<Props> = ({ dialogControl }) => {
     <Dialog
       control={dialogControl}
       title="Add category"
-      description="Set the properties of the new category"
+      description="Set the properties of the new category. The monthly amount is the amount that will be added to the account every month. The Initial Amount is the money you will alocate from your main Expense Account to the new Budget Category"
       buttons={
         <ButtonPlain
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -58,7 +59,7 @@ const NewCategoryDialog: React.FC<Props> = ({ dialogControl }) => {
         </ButtonPlain>
       }
     >
-      <NewAccountForm formControl={control} />
+      <NewCategoryForm formControl={control} />
 
       {error && <p className="text-red-500">{error.message}</p>}
     </Dialog>

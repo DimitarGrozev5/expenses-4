@@ -5,7 +5,12 @@ import { z } from "zod";
 
 export const NewCategorySchema = z.object({
   name: z.string().min(1, "Name is required"),
-  initValue: z.number().gte(0, "Initial amount must be greater than 0"),
+  montlyInput: z
+    .number()
+    .gte(0, "Montly input must be greater than or equal to 0"),
+  initAmount: z
+    .number()
+    .gte(0, "Initial amount must be greater than or equal to 0"),
 });
 
 export type NewCategoryFormData = z.infer<typeof NewCategorySchema>;
@@ -29,7 +34,7 @@ const NewCategoryForm: React.FC<Props> = ({ formControl }) => {
             value={value}
             onChange={onChange}
             onBlur={onBlur}
-            label="Account name"
+            label="Category name"
             helperText={error?.message}
             error={!!error}
           />
@@ -37,10 +42,13 @@ const NewCategoryForm: React.FC<Props> = ({ formControl }) => {
       />
       <Controller
         control={formControl}
-        name="initValue"
+        name="montlyInput"
         rules={{
-          required: "Initial amount is required",
-          min: { value: 0, message: "Initial amount must be greater than 0" },
+          required: "Monthly input is required",
+          min: {
+            value: 0,
+            message: "Monthly input must be greater than or equal to 0",
+          },
         }}
         render={({
           field: { value, onChange, onBlur },
@@ -51,7 +59,32 @@ const NewCategoryForm: React.FC<Props> = ({ formControl }) => {
             onChange={onChange}
             onBlur={onBlur}
             min={0}
-            label="Account initial amount"
+            label="Monthly input"
+            helperText={error?.message}
+            error={!!error}
+          />
+        )}
+      />
+      <Controller
+        control={formControl}
+        name="initAmount"
+        rules={{
+          required: "Initial amount is required",
+          min: {
+            value: 0,
+            message: "Initial amount must be greater than or equal to 0",
+          },
+        }}
+        render={({
+          field: { value, onChange, onBlur },
+          fieldState: { error },
+        }) => (
+          <NumberInput
+            value={value}
+            onChange={onChange}
+            onBlur={onBlur}
+            min={0}
+            label="Initial amount"
             helperText={error?.message}
             error={!!error}
           />
