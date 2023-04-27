@@ -13,7 +13,7 @@ import AccountMainCard from "~/components/specific/account-main-card";
 import TransferFundsDialog from "~/components/dialogs/transfer-funds-dialog";
 
 const AccountsPage: NextPage = () => {
-  const { data: accounts, isLoading, error } = api.account.getAll.useQuery();
+  const { data: accounts, isLoading, error } = api.accounts.getAll.useQuery();
 
   const newAccountDialogCtrl = useDialog();
   const transferFundsDialogCtrl = useDialog();

@@ -6,7 +6,7 @@ import { TransferFundsSchema } from "~/components/forms/transfer-funds-form";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
-export const expensesAccountRouter = createTRPCRouter({
+export const categoriesRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     try {
       const result = await ctx.prisma.expenseAccount.findMany({

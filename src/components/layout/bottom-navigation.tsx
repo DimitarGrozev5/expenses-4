@@ -5,6 +5,8 @@ import { useSession } from "next-auth/react";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import SavingsIcon from "@mui/icons-material/Savings";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import ChecklistIcon from "@mui/icons-material/Checklist";
+
 import { useRouter } from "next/router";
 import clsx from "clsx";
 
@@ -22,7 +24,8 @@ const BottomNavigation: React.FC = () => {
             href="/expenses"
             className={clsx(
               "flex flex-1 flex-col items-center justify-center p-4",
-              path === "/expenses" && "rounded-md border border-gray-400 bg-gray-300"
+              path === "/expenses" &&
+                "rounded-md border border-gray-400 bg-gray-300"
             )}
           >
             <AttachMoneyIcon />
@@ -31,10 +34,24 @@ const BottomNavigation: React.FC = () => {
         </li>
         <li className="flex items-stretch justify-center p-2">
           <Link
+            href="/budget"
+            className={clsx(
+              "flex flex-1 flex-col items-center justify-center p-4",
+              path === "/budget" &&
+                "rounded-md border border-gray-400 bg-gray-300"
+            )}
+          >
+            <ChecklistIcon />
+            <span>Budget</span>
+          </Link>
+        </li>
+        <li className="flex items-stretch justify-center p-2">
+          <Link
             href="/accounts"
             className={clsx(
               "flex flex-1 flex-col items-center justify-center p-4",
-              path === "/accounts" && "rounded-md border border-gray-400 bg-gray-300"
+              path === "/accounts" &&
+                "rounded-md border border-gray-400 bg-gray-300"
             )}
           >
             <SavingsIcon />
@@ -46,7 +63,8 @@ const BottomNavigation: React.FC = () => {
             href="/Overview"
             className={clsx(
               "flex flex-1 flex-col items-center justify-center p-4",
-              path === "/Overview" && "rounded-md border border-gray-400 bg-gray-300"
+              path === "/overview" &&
+                "rounded-md border border-gray-400 bg-gray-300"
             )}
           >
             <BarChartIcon />

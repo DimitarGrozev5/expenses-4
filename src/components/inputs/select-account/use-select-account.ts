@@ -24,7 +24,7 @@ export const useSelectAccount = (
     data: accountResults,
     isLoading,
     error,
-  } = api.account.findByName.useQuery(deferedSearchString, { initialData: [] });
+  } = api.accounts.findByName.useQuery(deferedSearchString, { initialData: [] });
 
   const selectAccount = useCallback(
     (accountId: AccountId | null) => {

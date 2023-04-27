@@ -28,7 +28,7 @@ const TransferFundsDialog: React.FC<Props> = ({ dialogControl }) => {
     isSuccess: transferedFunds,
     error,
     reset: resetMutation,
-  } = api.account.transferFunds.useMutation();
+  } = api.accounts.transferFunds.useMutation();
 
   const queryClient = useQueryClient();
 
@@ -37,9 +37,9 @@ const TransferFundsDialog: React.FC<Props> = ({ dialogControl }) => {
 
   useEffect(() => {
     if (transferedFunds) {
-      const invalidationKeys1 = getQueryKey(api.account.getAll);
-      const invalidationKeys2 = getQueryKey(api.account.getById, fromAccountId);
-      const invalidationKeys3 = getQueryKey(api.account.getById, toAccountId);
+      const invalidationKeys1 = getQueryKey(api.accounts.getAll);
+      const invalidationKeys2 = getQueryKey(api.accounts.getById, fromAccountId);
+      const invalidationKeys3 = getQueryKey(api.accounts.getById, toAccountId);
 
       void queryClient.invalidateQueries(invalidationKeys1);
       void queryClient.invalidateQueries(invalidationKeys2);

@@ -35,7 +35,7 @@ const AccountMainCard: React.FC<Props> = ({ forAccount }) => {
     data: account,
     isLoading,
     error,
-  } = api.account.getById.useQuery(forAccount.id, {
+  } = api.accounts.getById.useQuery(forAccount.id, {
     initialData: forAccount,
   });
 

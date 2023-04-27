@@ -30,14 +30,14 @@ const AddFundsToAccountDialog: React.FC<Props> = ({
     isSuccess: addedFunds,
     error,
     reset: resetMutationState,
-  } = api.account.addFundsToAccount.useMutation();
+  } = api.accounts.addFundsToAccount.useMutation();
 
   const queryClient = useQueryClient();
 
   useEffect(() => {
     if (addedFunds) {
-      const invalidationKeys1 = getQueryKey(api.account.getAll);
-      const invalidationKeys2 = getQueryKey(api.account.getById, accountId);
+      const invalidationKeys1 = getQueryKey(api.accounts.getAll);
+      const invalidationKeys2 = getQueryKey(api.accounts.getById, accountId);
       void queryClient.invalidateQueries(invalidationKeys1);
       void queryClient.invalidateQueries(invalidationKeys2);
 

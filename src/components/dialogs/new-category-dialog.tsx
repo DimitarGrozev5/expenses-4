@@ -5,56 +5,56 @@ import Dialog from "../layout/dialog";
 import { useForm } from "react-hook-form";
 import ButtonPlain from "../layout/button-plain";
 import { api } from "~/utils/api";
-import type { NewAccountFormData } from "../forms/new-account-form.types";
 import { getQueryKey } from "@trpc/react-query";
 import { useQueryClient } from "@tanstack/react-query";
+import { type NewCategoryFormData } from "../forms/new-category-form";
 
 type Props = { dialogControl: DialogControl };
 
-const NewAccountDialog: React.FC<Props> = ({ dialogControl }) => {
+const NewCategoryDialog: React.FC<Props> = ({ dialogControl }) => {
   const {
     control,
     handleSubmit,
     reset: resetForm,
-  } = useForm<NewAccountFormData>({
+  } = useForm<NewCategoryFormData>({
     defaultValues: { name: "", initValue: 0 },
   });
 
   const {
-    mutate: addAccount,
-    isLoading: addingAccount,
-    isSuccess: addedAccount,
+    mutate: addCategory,
+    isLoading: addingCategory,
+    isSuccess: addedCategory,
     error,
-  } = api.accounts.addAccount.useMutation();
+  } = api.categories.addCategory.useMutation();
 
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (addedAccount) {
+    if (addedCategory) {
       const invalidationKeys = getQueryKey(api.accounts.getAll);
       void queryClient.invalidateQueries(invalidationKeys);
 
       dialogControl.handleClose();
       resetForm();
     }
-  }, [addedAccount, dialogControl, queryClient, resetForm]);
+  }, [addedCategory, dialogControl, queryClient, resetForm]);
 
-  const submitHandler = handleSubmit((data: NewAccountFormData) => {
-    addAccount(data);
+  const submitHandler = handleSubmit((data: NewCategoryFormData) => {
+    addCategory(data);
   });
 
   return (
     <Dialog
       control={dialogControl}
-      title="Add account"
-      description="Set a name and a starting value for your new account."
+      title="Add category"
+      description="Set the properties of the new category"
       buttons={
         <ButtonPlain
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={submitHandler}
-          loading={addingAccount}
+          loading={addingCategory}
         >
-          Add new account
+          Add new category
         </ButtonPlain>
       }
     >
@@ -65,4 +65,4 @@ const NewAccountDialog: React.FC<Props> = ({ dialogControl }) => {
   );
 };
 
-export default NewAccountDialog;
+export default NewCategoryDialog;
