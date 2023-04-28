@@ -142,5 +142,7 @@ model Reason {
     id        String @id @default(cuid())
     timesUsed Int    @default(0)
 
+    tag String @unique
+
     ReasonOnExpense ReasonOnExpense[]
 }
