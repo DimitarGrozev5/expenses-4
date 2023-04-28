@@ -9,7 +9,7 @@ import NewCategoryDialog from "~/components/dialogs/new-category-dialog";
 import { api } from "~/utils/api";
 import { Skeleton } from "@mui/material";
 import Card from "~/components/layout/card";
-import CategoryMainCard from "~/components/specific/category-main-card";
+import CategoryMainCard from "~/components/specific/cateogry/category-main-card";
 
 const BudgetPage: NextPage = () => {
   const {
