@@ -1,42 +1,44 @@
-import { type ExpenseAccount } from "@prisma/client";
 import Card from "../layout/card";
 import clsx from "clsx";
-import ButtonPlain from "../layout/button-plain";
 import { useDialog } from "../layout/dialog";
-import AddFundsToAccountDialog from "../dialogs/add-funds-to-account-dialog";
 import { api } from "~/utils/api";
 import { Skeleton } from "@mui/material";
+import { type BudgetCategoryWithExpenses } from "prisma/types";
 
 type Props = {
-  forAccount: ExpenseAccount;
+  forCategory: BudgetCategoryWithExpenses;
 };
 
 // Utility fn that calculates flex-grow prop for initAmount
-const initFlex = (acc: ExpenseAccount) => {
+const initFlex = (cat: BudgetCategoryWithExpenses) => {
+  const expenses = cat.expenses.reduce((sum, e) => sum + +e.amount, 0);
+
   const flexVal = Math.round(
-    (+acc.initAmount / (Math.abs(+acc.credit) || 1)) * 100
+    (+cat.startOfPeriodAmount / (Math.abs(expenses) || 1)) * 100
   );
 
   return Math.max(1, flexVal);
 };
 
 // Utility fn that calculates flex-grow prop for credit
-const creditFlex = (acc: ExpenseAccount) => {
+const creditFlex = (cat: BudgetCategoryWithExpenses) => {
+  const expenses = cat.expenses.reduce((sum, e) => sum + +e.amount, 0);
+
   const flexVal = Math.round(
-    (Math.abs(+acc.credit) / (+acc.initAmount || 1)) * 100
+    (Math.abs(expenses) / (+cat.startOfPeriodAmount || 1)) * 100
   );
 
   return Math.max(1, flexVal);
 };
 
-const AccountMainCard: React.FC<Props> = ({ forAccount }) => {
+const CategoryMainCard: React.FC<Props> = ({ forCategory }) => {
   // Fetch data
   const {
-    data: account,
+    data: category,
     isLoading,
     error,
-  } = api.accounts.getById.useQuery(forAccount.id, {
-    initialData: forAccount,
+  } = api.categories.getById.useQuery(forCategory.id, {
+    initialData: forCategory,
   });
 
   // Setup modal controls
@@ -45,39 +47,35 @@ const AccountMainCard: React.FC<Props> = ({ forAccount }) => {
   return (
     <>
       {isLoading && <Skeleton height={150} sx={{ transform: "scale(1,1)" }} />}
-      {error && (
-        <Card className="text-red-500">
-          Error loading account: {error.message}
-        </Card>
-      )}
+      {error && <Card className="text-red-500">{error.message}</Card>}
 
-      {account && (
+      {category && (
         <Card noPadding>
           <div className="bg-gray-500 py-1 text-center text-gray-100">
-            {account.name}
+            {category.name}
           </div>
 
           <div className="flex">
             <div
               className={clsx("flex flex-col items-center px-1 py-1")}
-              style={{ flex: initFlex(account) }}
+              style={{ flex: initFlex(category) }}
             >
               <span className="text-md">
-                {(+account.initAmount).toFixed(2)}лв
+                {(+category.startOfPeriodAmount).toFixed(2)}лв
               </span>
               <span className="text-xs">Free funds</span>
             </div>
             <div
               className={clsx(
-                "flex flex-col items-center px-1 py-1",
-                +account.credit <= 0
-                  ? "bg-green-200 text-green-900"
-                  : "bg-red-300 text-red-900"
+                "flex flex-col items-center bg-red-300 px-1 py-1 text-red-900"
               )}
-              style={{ flex: creditFlex(account) }}
+              style={{ flex: creditFlex(category) }}
             >
               <span className="text-md">
-                {Math.abs(+account.credit).toFixed(2)}лв
+                {category.expenses
+                  .reduce((sum, e) => sum + +e.amount, 0)
+                  .toFixed()}
+                лв
               </span>
               <span className="text-xs">Credit</span>
             </div>
@@ -86,31 +84,32 @@ const AccountMainCard: React.FC<Props> = ({ forAccount }) => {
           <div
             className={clsx(
               "flex flex-col items-center py-1",
-              +account.credit <= 0
+              +category.credit <= 0
                 ? "bg-green-100 text-green-900"
                 : "bg-red-100 text-red-900"
             )}
           >
             <span className="text-md">
-              {Math.abs(+account.initAmount - +account.credit).toFixed(2)}
+              {Math.abs(+category.startOfPeriodAmount).toFixed(2)}
               лв
             </span>
             <span className="text-xs">Should have</span>
           </div>
-          <div className="flex justify-around bg-gray-300 px-4 py-2">
+
+          {/* <div className="flex justify-around bg-gray-300 px-4 py-2">
             <ButtonPlain onClick={addFundsDialogCtrl.handleOpen}>
               Add funds
             </ButtonPlain>
-          </div>
+          </div> */}
         </Card>
       )}
 
-      <AddFundsToAccountDialog
+      {/* <AddFundsToAccountDialog
         dialogControl={addFundsDialogCtrl}
-        accountId={account?.id ?? forAccount.id}
-      />
+        accountId={category?.id ?? forCategory.id}
+      /> */}
     </>
   );
 };
 
-export default AccountMainCard;
+export default CategoryMainCard;

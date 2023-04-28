@@ -41,6 +41,8 @@ export const expensesAccountRouter = createTRPCRouter({
             message: "Account not found.",
           });
         }
+
+        return result;
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;

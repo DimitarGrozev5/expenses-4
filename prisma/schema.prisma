@@ -102,7 +102,7 @@ model BudgetCategory {
     categoryOrder       Int
     trackDaily          Boolean
 
-    Expense Expense[]
+    expenses Expense[]
 
     @@index([userId])
 }

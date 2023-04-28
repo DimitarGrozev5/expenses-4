@@ -10,6 +10,7 @@ export const categoriesRouter = createTRPCRouter({
       const result = await ctx.prisma.budgetCategory.findMany({
         where: { user: { id: ctx.session.user.id } },
         orderBy: { categoryOrder: "asc" },
+        include: { expenses: true },
       });
       return result;
     } catch (error) {
@@ -31,6 +32,7 @@ export const categoriesRouter = createTRPCRouter({
       try {
         const result = await ctx.prisma.budgetCategory.findUnique({
           where: { id: input },
+          include: { expenses: true },
         });
 
         if (!result || result.userId !== ctx.session.user.id) {
@@ -39,6 +41,8 @@ export const categoriesRouter = createTRPCRouter({
             message: "Account not found.",
           });
         }
+
+        return result;
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;

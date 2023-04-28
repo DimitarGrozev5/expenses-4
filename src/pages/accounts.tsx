@@ -27,7 +27,7 @@ const AccountsPage: NextPage = () => {
         </>
       )}
 
-      {error && <Card>Can&apos;t load account data</Card>}
+      {error && <Card>Can&apos;t load account data: {error.message}</Card>}
 
       {accounts && accounts.length === 0 && (
         <Card>No Accounts yet. Create one.</Card>
