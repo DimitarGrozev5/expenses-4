@@ -64,6 +64,7 @@ model User {
     ExpenseAccount ExpenseAccount[] @relation("ExpenseAccountForUser")
     BudgetCategory BudgetCategory[]
     Expense        Expense[]
+    Reason         Reason[]
 }
 
 model VerificationToken {
@@ -144,5 +145,10 @@ model Reason {
 
     tag String @unique
 
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
     ReasonOnExpense ReasonOnExpense[]
+
+    @@index([userId])
 }

@@ -1,13 +1,14 @@
 import { type Control, Controller } from "react-hook-form";
 import NumberInput from "../inputs/number-input";
-import TextInput from "../inputs/text-input";
 import { z } from "zod";
-import Switch from "../inputs/switch";
+import { VerticalSelectCategory1 } from "../inputs/select-category/vertical-select-cateogry";
+import Spacer from "../layout/spacer";
+import { VerticalSelectAccount2 } from "../inputs/select-account/vertical-select-account";
 
 export const NewExpenseSchema = z.object({
   createdOn: z.date(),
-  categoryId: z.string(),
-  fromAcountId: z.string(),
+  categoryId: z.union([z.string(), z.null()]),
+  fromAcountId: z.union([z.string(), z.null()]),
   amount: z.number(),
   reasons: z.array(z.string()),
 });
@@ -23,31 +24,9 @@ const NewExpenseForm: React.FC<Props> = ({ formControl }) => {
     <>
       <Controller
         control={formControl}
-        name="name"
-        rules={{ required: "Name is required" }}
-        render={({
-          field: { value, onChange, onBlur },
-          fieldState: { error },
-        }) => (
-          <TextInput
-            value={value}
-            onChange={onChange}
-            onBlur={onBlur}
-            label="Category name"
-            helperText={error?.message}
-            error={!!error}
-          />
-        )}
-      />
-      <Controller
-        control={formControl}
-        name="montlyInput"
+        name="amount"
         rules={{
-          required: "Monthly input is required",
-          min: {
-            value: 0,
-            message: "Monthly input must be greater than or equal to 0",
-          },
+          required: "Amount is required",
         }}
         render={({
           field: { value, onChange, onBlur },
@@ -58,49 +37,53 @@ const NewExpenseForm: React.FC<Props> = ({ formControl }) => {
             onChange={onChange}
             onBlur={onBlur}
             min={0}
-            label="Monthly input"
+            label="Expense amount"
             helperText={error?.message}
             error={!!error}
           />
         )}
       />
-      <Controller
-        control={formControl}
-        name="initAmount"
-        rules={{
-          required: "Initial amount is required",
-          min: {
-            value: 0,
-            message: "Initial amount must be greater than or equal to 0",
-          },
-        }}
-        render={({
-          field: { value, onChange, onBlur },
-          fieldState: { error },
-        }) => (
-          <NumberInput
-            value={value}
-            onChange={onChange}
-            onBlur={onBlur}
-            min={0}
-            label="Initial amount"
-            helperText={error?.message}
-            error={!!error}
-          />
-        )}
-      />
+      <Spacer gap={1} />
 
       <Controller
         control={formControl}
-        name="trackDaily"
-        render={({ field: { value, onChange } }) => (
-          <Switch
-            label="Track daily expenses"
-            checked={value}
+        name="categoryId"
+        rules={{
+          validate: (val) => {
+            if (val === null) return "Please select a category";
+          },
+        }}
+        render={({ field: { value, onChange }, fieldState: { error } }) => (
+          <VerticalSelectCategory1
+            selectedCategory={value}
             onChange={onChange}
+            label="For Category:"
+            error={!!error}
+            helperText={error?.message}
           />
         )}
       />
+      <Spacer gap={1} />
+
+      <Controller
+        control={formControl}
+        name="fromAcountId"
+        rules={{
+          validate: (val) => {
+            if (val === null) return "Please select an account";
+          },
+        }}
+        render={({ field: { value, onChange }, fieldState: { error } }) => (
+          <VerticalSelectAccount2
+            selectedAccount={value}
+            onChange={onChange}
+            label="From Account:"
+            error={!!error}
+            helperText={error?.message}
+          />
+        )}
+      />
+      <Spacer gap={1} />
     </>
   );
 };

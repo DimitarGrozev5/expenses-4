@@ -6,9 +6,9 @@ import ButtonPlain from "../layout/button-plain";
 import { api } from "~/utils/api";
 import { getQueryKey } from "@trpc/react-query";
 import { useQueryClient } from "@tanstack/react-query";
-import NewCategoryForm, {
-  type NewCategoryFormData,
-} from "../forms/new-category-form";
+import NewExpenseForm, {
+  type NewExpenseFormData,
+} from "../forms/new-expense-form";
 
 type Props = { dialogControl: DialogControl };
 
@@ -17,54 +17,55 @@ const NewExpenseDialog: React.FC<Props> = ({ dialogControl }) => {
     control,
     handleSubmit,
     reset: resetForm,
-  } = useForm<NewCategoryFormData>({
+  } = useForm<NewExpenseFormData>({
     defaultValues: {
-      name: "",
-      montlyInput: 0,
-      initAmount: 0,
-      trackDaily: false,
+      createdOn: new Date(),
+      categoryId: null,
+      fromAcountId: null,
+      amount: 0,
+      reasons: [],
     },
   });
 
   const {
-    mutate: addCategory,
-    isLoading: addingCategory,
-    isSuccess: addedCategory,
+    mutate: addExpense,
+    isLoading: addingExpense,
+    isSuccess: addedExpense,
     error,
-  } = api.categories.addCategory.useMutation();
+  } = api.expenses.addExpense.useMutation();
 
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (addedCategory) {
+    if (addedExpense) {
       const invalidationKeys = getQueryKey(api.accounts.getAll);
       void queryClient.invalidateQueries(invalidationKeys);
 
       dialogControl.handleClose();
       resetForm();
     }
-  }, [addedCategory, dialogControl, queryClient, resetForm]);
+  }, [addedExpense, dialogControl, queryClient, resetForm]);
 
-  const submitHandler = handleSubmit((data: NewCategoryFormData) => {
-    addCategory(data);
+  const submitHandler = handleSubmit((data: NewExpenseFormData) => {
+    addExpense(data);
   });
 
   return (
     <Dialog
       control={dialogControl}
-      title="Add category"
-      description="Set the properties of the new category. The monthly amount is the amount that will be added to the account every month. The Initial Amount is the money you will alocate from your main Expense Account to the new Budget Category"
+      title="Add expense"
+      description=""
       buttons={
         <ButtonPlain
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={submitHandler}
-          loading={addingCategory}
+          loading={addingExpense}
         >
-          Add new category
+          Add new expense
         </ButtonPlain>
       }
     >
-      <NewCategoryForm formControl={control} />
+      <NewExpenseForm formControl={control} />
 
       {error && <p className="text-red-500">{error.message}</p>}
     </Dialog>
