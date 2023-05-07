@@ -4,6 +4,7 @@ import { z } from "zod";
 import { VerticalSelectCategory1 } from "../inputs/select-category/vertical-select-cateogry";
 import Spacer from "../layout/spacer";
 import { VerticalSelectAccount2 } from "../inputs/select-account/vertical-select-account";
+import SelectReasons from "../inputs/select-reasons";
 
 export const NewExpenseSchema = z.object({
   createdOn: z.date(),
@@ -84,6 +85,26 @@ const NewExpenseForm: React.FC<Props> = ({ formControl }) => {
         )}
       />
       <Spacer gap={1} />
+
+      <Controller
+        control={formControl}
+        name="reasons"
+        rules={{
+          validate: (val) => {
+            if (val.length === 0) {
+              return "Please enter at least one reason";
+            }
+          },
+        }}
+        render={({ field: { value, onChange }, fieldState: { error } }) => (
+          <SelectReasons
+            values={value}
+            onChange={onChange}
+            error={!!error}
+            helperText={error?.message}
+          />
+        )}
+      />
     </>
   );
 };

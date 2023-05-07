@@ -2,28 +2,44 @@ import { TRPCError } from "@trpc/server";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { NewExpenseSchema } from "~/components/forms/new-expense-form";
+import {
+  type BudgetCategory,
+  type Expense,
+  type Reason,
+  type ReasonOnExpense,
+} from "@prisma/client";
+
+export type ExpenseWithReasons = Expense & {
+  reasons: (ReasonOnExpense & {
+    reason: Reason;
+  })[];
+  category: BudgetCategory;
+};
 
 export const expensesRouter = createTRPCRouter({
-  // getAll: protectedProcedure.query(async ({ ctx }) => {
-  //   try {
-  //     const result = await ctx.prisma.budgetCategory.findMany({
-  //       where: { user: { id: ctx.session.user.id } },
-  //       orderBy: { categoryOrder: "asc" },
-  //       include: { expenses: true },
-  //     });
-  //     return result;
-  //   } catch (error) {
-  //     if (error instanceof TRPCError) {
-  //       throw error;
-  //     }
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      const result = await ctx.prisma.expense.findMany({
+        where: { user: { id: ctx.session.user.id } },
+        orderBy: { createdOn: "desc" },
+        include: {
+          category: true,
+          reasons: { include: { reason: true } },
+        },
+      });
+      return result;
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error;
+      }
 
-  //     throw new TRPCError({
-  //       code: "INTERNAL_SERVER_ERROR",
-  //       message: "An unexpected error occurred, please try again later.",
-  //       cause: error,
-  //     });
-  //   }
-  // }),
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "An unexpected error occurred, please try again later.",
+        cause: error,
+      });
+    }
+  }),
 
   // getById: protectedProcedure
   //   .input(z.string())
