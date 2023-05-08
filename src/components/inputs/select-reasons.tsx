@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
+
+import CheckIcon from "@mui/icons-material/Check";
+import ClearIcon from "@mui/icons-material/Clear";
+
 import TextInput from "./text-input";
 import { api } from "~/utils/api";
+import Button from "../layout/button";
 
 type Props = {
   values: string[];
@@ -48,7 +53,7 @@ const SelectReasons: React.FC<Props> = ({
   return (
     <div className="flex w-full flex-col gap-2">
       {error && <div className="text-red-500">{helperText}</div>}
-      
+
       <div className="flex flex-wrap items-center gap-4">
         <div>Selected reasons:</div>
         {values.map((value) => (
@@ -66,6 +71,18 @@ const SelectReasons: React.FC<Props> = ({
         value={searchText}
         onChange={setSearchText}
         label="Search tag"
+        endButtons={
+          searchText.length > 0 && (
+            <>
+              <Button plain onClick={handleAddTag(searchText)}>
+                <CheckIcon />
+              </Button>
+              <Button plain onClick={() => setSearchText("")}>
+                <ClearIcon />
+              </Button>
+            </>
+          )
+        }
       />
 
       <div className="flex flex-wrap gap-4">

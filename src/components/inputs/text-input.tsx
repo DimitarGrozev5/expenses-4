@@ -7,6 +7,7 @@ type Props = {
   label: string;
   error?: boolean;
   helperText?: string;
+  endButtons?: React.ReactNode;
 };
 
 const TextInput: React.FC<Props> = ({
@@ -14,6 +15,7 @@ const TextInput: React.FC<Props> = ({
   onChange,
   onBlur = () => undefined,
   label,
+  endButtons,
   error = false,
   helperText = "",
 }) => {
@@ -25,17 +27,24 @@ const TextInput: React.FC<Props> = ({
         </span>
         <span className={clsx(error && "text-red-500")}>{helperText}</span>
       </div>
-      <div className="flex justify-between">
+      <div
+        className={clsx(
+          "relative flex justify-between rounded-md border border-gray-300",
+          error && "border-red-500"
+        )}
+      >
         <input
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
           type="text"
-          className={clsx(
-            "flex-1 rounded-md border border-gray-300 px-3 py-2",
-            error && "border-red-500"
-          )}
+          className={"flex-1 rounded-md px-3 py-2"}
         />
+        {endButtons && (
+          <div className="absolute inset-y-0 right-0 flex items-center gap-2">
+            {endButtons}
+          </div>
+        )}
       </div>
     </div>
   );
