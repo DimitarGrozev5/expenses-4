@@ -1,5 +1,4 @@
 import Card from "../../layout/card";
-import clsx from "clsx";
 import { useDialog } from "../../layout/dialog";
 import { api } from "~/utils/api";
 import { Skeleton } from "@mui/material";
@@ -23,7 +22,7 @@ const CategoryMainCard: React.FC<Props> = ({ forCategory }) => {
   });
 
   // Setup modal controls
-  const addFundsDialogCtrl = useDialog();
+  // const addFundsDialogCtrl = useDialog();
 
   return (
     <>

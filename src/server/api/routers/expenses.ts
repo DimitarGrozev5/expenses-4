@@ -8,6 +8,7 @@ import {
   type Reason,
   type ReasonOnExpense,
 } from "@prisma/client";
+import { z } from "zod";
 
 export type ExpenseWithReasons = Expense & {
   reasons: (ReasonOnExpense & {
@@ -41,44 +42,38 @@ export const expensesRouter = createTRPCRouter({
     }
   }),
 
-  // getById: protectedProcedure
-  //   .input(z.string())
-  //   .query(async ({ ctx, input }) => {
-  //     try {
-  //       const result = await ctx.prisma.budgetCategory.findUnique({
-  //         where: { id: input },
-  //         include: { expenses: true },
-  //       });
+  getById: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      try {
+        const result = await ctx.prisma.expense.findUnique({
+          where: { id: input },
+          include: {
+            category: true,
+            reasons: { include: { reason: true } },
+          },
+        });
 
-  //       if (!result || result.userId !== ctx.session.user.id) {
-  //         throw new TRPCError({
-  //           code: "NOT_FOUND",
-  //           message: "Account not found.",
-  //         });
-  //       }
+        if (!result || result.userId !== ctx.session.user.id) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Expense not found.",
+          });
+        }
 
-  //       return result;
-  //     } catch (error) {
-  //       if (error instanceof TRPCError) {
-  //         throw error;
-  //       }
+        return result;
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
 
-  //       throw new TRPCError({
-  //         code: "INTERNAL_SERVER_ERROR",
-  //         message: "An unexpected error occurred, please try again later.",
-  //         cause: error,
-  //       });
-  //     }
-  //   }),
-
-  // findByName: protectedProcedure
-  //   .input(z.string())
-  //   .query(async ({ ctx, input }) => {
-  //     return await ctx.prisma.budgetCategory.findMany({
-  //       where: { name: { contains: input }, user: { id: ctx.session.user.id } },
-  //       orderBy: { categoryOrder: "asc" },
-  //     });
-  //   }),
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred, please try again later.",
+          cause: error,
+        });
+      }
+    }),
 
   addExpense: protectedProcedure
     .input(NewExpenseSchema)

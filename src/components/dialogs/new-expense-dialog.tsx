@@ -32,19 +32,21 @@ const NewExpenseDialog: React.FC<Props> = ({ dialogControl }) => {
     isLoading: addingExpense,
     isSuccess: addedExpense,
     error,
+    reset: resetMutation,
   } = api.expenses.addExpense.useMutation();
 
   const queryClient = useQueryClient();
 
   useEffect(() => {
     if (addedExpense) {
-      const invalidationKeys = getQueryKey(api.accounts.getAll);
+      const invalidationKeys = getQueryKey(api.expenses.getAll);
       void queryClient.invalidateQueries(invalidationKeys);
 
       dialogControl.handleClose();
       resetForm();
+      resetMutation();
     }
-  }, [addedExpense, dialogControl, queryClient, resetForm]);
+  }, [addedExpense, dialogControl, queryClient, resetForm, resetMutation]);
 
   const submitHandler = handleSubmit((data: NewExpenseFormData) => {
     addExpense(data);

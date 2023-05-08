@@ -6,9 +6,15 @@ import AddIcon from "@mui/icons-material/Add";
 import { useDialog } from "~/components/layout/dialog";
 import SpeedDial from "~/components/layout/speed-dial";
 import NewExpenseDialog from "~/components/dialogs/new-expense-dialog";
+import { api } from "~/utils/api";
+import { Skeleton } from "@mui/material";
+import Card from "~/components/layout/card";
+import ExpenseMainCard from "~/components/specific/expense-main-card";
 
 const ExpensesPage: NextPage = () => {
-  const newЕьпенсеDialogCtrl = useDialog();
+  const newExpenseDialogCtrl = useDialog();
+
+  const { data: expenses, isLoading, error } = api.expenses.getAll.useQuery();
 
   return (
     <>
@@ -16,36 +22,34 @@ const ExpensesPage: NextPage = () => {
         <title>Expenses</title>
       </Head>
 
-      {/* {isLoading && (
+      {isLoading && (
         <>
           <Skeleton height={150} sx={{ transform: "scale(1,1)" }} />
           <Skeleton height={150} sx={{ transform: "scale(1,1)" }} />
         </>
       )}
 
-      {error && <Card>Can&apos;t load category data</Card>}
+      {error && <Card>Can&apos;t load expenses data</Card>}
 
-      {categories && categories.length === 0 && (
-        <Card>No Categories yet. Create one.</Card>
-      )}
+      {expenses && expenses.length === 0 && <Card>No Expenses yet</Card>}
 
-      {categories &&
-        categories.length > 0 &&
-        categories.map((category) => (
-          <CategoryMainCard key={category.id} forCategory={category} />
-        ))} */}
+      {expenses &&
+        expenses.length > 0 &&
+        expenses.map((expense) => (
+          <ExpenseMainCard key={expense.id} forExpense={expense} />
+        ))}
 
       <SpeedDial
         actions={[
           {
             label: "Add expense",
             icon: <AddIcon />,
-            action: newЕьпенсеDialogCtrl.handleOpen,
+            action: newExpenseDialogCtrl.handleOpen,
           },
         ]}
       />
 
-      <NewExpenseDialog dialogControl={newЕьпенсеDialogCtrl} />
+      <NewExpenseDialog dialogControl={newExpenseDialogCtrl} />
     </>
   );
 };
