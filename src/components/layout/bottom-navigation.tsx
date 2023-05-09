@@ -77,10 +77,10 @@ const BottomNavigation: React.FC = () => {
           {totalDeficit !== null && (
             <div
               className={clsx(
-                "absolute -right-1 top-0 rounded-full text-sm p-0.5 border border-red-200 shadow-sm",
-                totalDeficit < 0
-                  ? "bg-green-50 text-green-500"
-                  : "bg-red-50 text-red-500"
+                "absolute -right-1 top-0 rounded-full border p-0.5 text-sm  shadow-sm",
+                totalDeficit <= 0
+                  ? "border-green-200 bg-green-50 text-green-500"
+                  : "border-red-200 bg-red-50 text-red-500"
               )}
             >
               {(-1 * totalDeficit).toFixed(2)}

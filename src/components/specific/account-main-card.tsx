@@ -7,6 +7,7 @@ import AddFundsToAccountDialog from "../dialogs/add-funds-to-account-dialog";
 import { api } from "~/utils/api";
 import { Skeleton } from "@mui/material";
 import { useMemo } from "react";
+import AccountCurrAmountDialog from "../dialogs/set-account-curr-amount";
 
 type Props = {
   forAccount: ExpenseAccount;
@@ -127,6 +128,10 @@ const AccountMainCard: React.FC<Props> = ({ forAccount }) => {
 
       <AddFundsToAccountDialog
         dialogControl={addFundsDialogCtrl}
+        accountId={account?.id ?? forAccount.id}
+      />
+      <AccountCurrAmountDialog
+        dialogControl={setFundsDialogCtrl}
         accountId={account?.id ?? forAccount.id}
       />
     </>

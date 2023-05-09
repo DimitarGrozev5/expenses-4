@@ -2,6 +2,7 @@ import { type NextPage } from "next";
 
 import AddIcon from "@mui/icons-material/Add";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
+import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 
 import Card from "~/components/layout/card";
 import SpeedDial from "~/components/layout/speed-dial";
@@ -11,12 +12,14 @@ import { api } from "~/utils/api";
 import { Skeleton } from "@mui/material";
 import AccountMainCard from "~/components/specific/account-main-card";
 import TransferFundsDialog from "~/components/dialogs/transfer-funds-dialog";
+import AccountCurrAmountDialog from "~/components/dialogs/set-account-curr-amount";
 
 const AccountsPage: NextPage = () => {
   const { data: accounts, isLoading, error } = api.accounts.getAll.useQuery();
 
   const newAccountDialogCtrl = useDialog();
   const transferFundsDialogCtrl = useDialog();
+  const setCurrAmountDialogCtrl = useDialog();
 
   return (
     <>
@@ -41,6 +44,14 @@ const AccountsPage: NextPage = () => {
 
       <SpeedDial
         actions={[
+          accounts && accounts.length > 0
+            ? {
+                label: "Update account amount",
+                icon: <SystemUpdateAltIcon />,
+                action: setCurrAmountDialogCtrl.handleOpen,
+              }
+            : null,
+
           accounts && accounts.length > 1
             ? {
                 label: "Transfer funds",
@@ -48,6 +59,7 @@ const AccountsPage: NextPage = () => {
                 action: transferFundsDialogCtrl.handleOpen,
               }
             : null,
+
           {
             label: "Add account",
             icon: <AddIcon />,
@@ -58,6 +70,7 @@ const AccountsPage: NextPage = () => {
 
       <NewAccountDialog dialogControl={newAccountDialogCtrl} />
       <TransferFundsDialog dialogControl={transferFundsDialogCtrl} />
+      <AccountCurrAmountDialog dialogControl={setCurrAmountDialogCtrl} />
     </>
   );
 };

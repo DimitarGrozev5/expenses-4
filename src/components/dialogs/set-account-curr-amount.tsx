@@ -6,88 +6,83 @@ import ButtonPlain from "../layout/button-plain";
 import { api } from "~/utils/api";
 import { getQueryKey } from "@trpc/react-query";
 import { useQueryClient } from "@tanstack/react-query";
-import NewExpenseForm, {
-  type NewExpenseFormData,
-} from "../forms/new-expense-form";
+import AccountCurrentAmountForm, {
+  type AccountCurrentAmountFormData,
+} from "../forms/set-account-curr-amount";
 
-type Props = { dialogControl: DialogControl; categoryId?: string | null };
+type Props = { dialogControl: DialogControl; accountId?: string | null };
 
-const NewExpenseDialog: React.FC<Props> = ({
+const AccountCurrAmountDialog: React.FC<Props> = ({
   dialogControl,
-  categoryId = null,
+  accountId = null,
 }) => {
   const {
     control,
     handleSubmit,
     reset: resetForm,
-  } = useForm<NewExpenseFormData>({
+  } = useForm<AccountCurrentAmountFormData>({
     defaultValues: {
-      createdOn: new Date(),
-      fromAcountId: null,
-      categoryId,
+      accountId,
       amount: 0,
-      reasons: [],
     },
   });
 
   const {
-    mutate: addExpense,
-    isLoading: addingExpense,
-    isSuccess: addedExpense,
+    mutate: setAmount,
+    isLoading: settingAmount,
+    isSuccess: mutationSuccess,
     error,
     reset: resetMutation,
-  } = api.expenses.addExpense.useMutation();
+  } = api.accounts.setCurrentAmount.useMutation();
 
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (addedExpense) {
-      const invalidationKeys1 = getQueryKey(api.expenses.getAll);
-      const invalidationKeys2 = getQueryKey(api.categories.getAll);
-      const invalidationKeys3 = getQueryKey(
-        api.categories.getById,
-        categoryId ?? ""
+    if (mutationSuccess) {
+      const invalidationKeys1 = getQueryKey(api.accounts.getAll);
+      const invalidationKeys2 = getQueryKey(
+        api.accounts.getById,
+        accountId ?? ""
       );
       void queryClient.invalidateQueries(invalidationKeys1);
       void queryClient.invalidateQueries(invalidationKeys2);
-      void queryClient.invalidateQueries(invalidationKeys3);
 
       dialogControl.handleClose();
       resetForm();
       resetMutation();
     }
   }, [
-    addedExpense,
-    categoryId,
+    mutationSuccess,
     dialogControl,
     queryClient,
     resetForm,
     resetMutation,
+    accountId,
   ]);
 
-  const submitHandler = handleSubmit((data: NewExpenseFormData) => {
-    addExpense(data);
+  const submitHandler = handleSubmit((data: AccountCurrentAmountFormData) => {
+    setAmount(data);
   });
 
   return (
     <Dialog
       control={dialogControl}
       title="Add expense"
-      description=""
+      description="Set the amount that is actually in the account"
       buttons={
         <ButtonPlain
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={submitHandler}
-          loading={addingExpense}
+          loading={settingAmount}
         >
-          Add new expense
+          Update account amount
         </ButtonPlain>
       }
     >
-      <NewExpenseForm
+      <AccountCurrentAmountForm
         formControl={control}
-        hideCategoryIdForm={!!categoryId}
-        categoryId={categoryId}
+        hideAccountIdForm={!!accountId}
+        accountId={accountId}
       />
 
       {error && <p className="text-red-500">{error.message}</p>}
@@ -95,4 +90,4 @@ const NewExpenseDialog: React.FC<Props> = ({
   );
 };
 
-export default NewExpenseDialog;
+export default AccountCurrAmountDialog;

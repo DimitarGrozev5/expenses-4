@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { AddFundsToAccountSchema } from "~/components/forms/add-funds-to-account-form";
 import { NewAccountSchema } from "~/components/forms/new-account-form.types";
+import { AccountCurrentAmountSchema } from "~/components/forms/set-account-curr-amount";
 import { TransferFundsSchema } from "~/components/forms/transfer-funds-form";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
@@ -134,6 +135,47 @@ export const expensesAccountRouter = createTRPCRouter({
               code: "UNPROCESSABLE_CONTENT",
               message:
                 "If you subtract this amount, your account will go bellow zero",
+            });
+          }
+
+          return newData;
+        });
+
+        return result;
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred, please try again later.",
+          cause: error,
+        });
+      }
+    }),
+
+  setCurrentAmount: protectedProcedure
+    .input(AccountCurrentAmountSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const result = await ctx.prisma.$transaction(async (tr) => {
+          if (input.accountId === null) {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: "Please select an account",
+            });
+          }
+
+          const newData = await tr.expenseAccount.update({
+            where: { id: input.accountId },
+            data: { currentAmount: input.amount },
+          });
+
+          if (newData.userId !== ctx.session.user.id) {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: "You cannot add funds to this account",
             });
           }
 
