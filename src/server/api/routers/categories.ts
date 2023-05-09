@@ -119,6 +119,11 @@ export const categoriesRouter = createTRPCRouter({
             });
           }
 
+          await tr.expenseAccount.update({
+            where: { id: user.mainAccount.id },
+            data: { initAmount: { decrement: input.montlyInput } },
+          });
+
           return newBudgetCategory;
         });
 

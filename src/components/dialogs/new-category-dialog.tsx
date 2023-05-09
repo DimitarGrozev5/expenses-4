@@ -38,7 +38,7 @@ const NewCategoryDialog: React.FC<Props> = ({ dialogControl }) => {
 
   useEffect(() => {
     if (addedCategory) {
-      const invalidationKeys = getQueryKey(api.accounts.getAll);
+      const invalidationKeys = getQueryKey(api.categories.getAll);
       void queryClient.invalidateQueries(invalidationKeys);
 
       dialogControl.handleClose();

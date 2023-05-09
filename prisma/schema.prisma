@@ -55,7 +55,7 @@ model User {
     image         String?
 
     mainAccountId String?         @unique
-    mainAccount   ExpenseAccount? @relation("MainAccount", fields: [mainAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    mainAccount   ExpenseAccount? @relation("MainAccount", fields: [mainAccountId], references: [id], onDelete: SetNull, onUpdate: SetNull)
 
     lastPeriodStart DateTime @default(now())
 
@@ -79,7 +79,7 @@ model ExpenseAccount {
     id String @id @default(cuid())
 
     userId String
-    user   User   @relation("ExpenseAccountForUser", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    user   User   @relation("ExpenseAccountForUser", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
     name          String
     initAmount    Decimal @default(0)
@@ -133,10 +133,10 @@ model ReasonOnExpense {
     id String @id @default(cuid())
 
     expenseId String
-    expense   Expense @relation(fields: [expenseId], references: [id])
+    expense   Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
 
     reasonId String
-    reason   Reason @relation(fields: [reasonId], references: [id])
+    reason   Reason @relation(fields: [reasonId], references: [id], onDelete: Cascade)
 
     @@index([expenseId])
     @@index([reasonId])

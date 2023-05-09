@@ -21,6 +21,8 @@ const AccountsPage: NextPage = () => {
   const transferFundsDialogCtrl = useDialog();
   const setCurrAmountDialogCtrl = useDialog();
 
+  console.log(accounts);
+
   return (
     <>
       {isLoading && (

@@ -1,3 +1,4 @@
+import { Prisma, type ExpenseAccount, type User } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { AddFundsToAccountSchema } from "~/components/forms/add-funds-to-account-form";
@@ -7,12 +8,47 @@ import { TransferFundsSchema } from "~/components/forms/transfer-funds-form";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
+export type AccountExport = ExpenseAccount & {
+  mainAccountForUser: User | null;
+};
+
 export const expensesAccountRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     try {
-      const result = await ctx.prisma.expenseAccount.findMany({
-        where: { user: { id: ctx.session.user.id } },
-        orderBy: { accountOrder: "asc" },
+      const result = await ctx.prisma.$transaction(async (tr) => {
+        const accounts = await tr.expenseAccount.findMany({
+          where: { user: { id: ctx.session.user.id } },
+          orderBy: { accountOrder: "asc" },
+          include: { mainAccountForUser: true },
+        });
+
+        const categories = await tr.budgetCategory.findMany({
+          where: { user: { id: ctx.session.user.id } },
+          include: { expenses: true },
+        });
+
+        const totalCategoryAmount = categories.reduce((acc, curr) => {
+          const currExpenses = curr.expenses.reduce((acc, curr) => {
+            return acc + +curr.amount;
+          }, 0);
+
+          return acc + +curr.startOfPeriodAmount - currExpenses;
+        }, 0);
+
+        const mainAccountCorrection = accounts.map((acc) => {
+          if (acc.mainAccountForUser) {
+            return {
+              ...acc,
+              initAmount: new Prisma.Decimal(
+                +acc.initAmount + totalCategoryAmount
+              ),
+            };
+          }
+
+          return acc;
+        });
+
+        return mainAccountCorrection;
       });
       return result;
     } catch (error) {
@@ -32,16 +68,43 @@ export const expensesAccountRouter = createTRPCRouter({
     .input(z.string())
     .query(async ({ ctx, input }) => {
       try {
-        const result = await ctx.prisma.expenseAccount.findUnique({
-          where: { id: input },
-        });
-
-        if (!result || result.userId !== ctx.session.user.id) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Account not found.",
+        const result = await ctx.prisma.$transaction(async (tr) => {
+          const account = await tr.expenseAccount.findUnique({
+            where: { id: input },
+            include: { mainAccountForUser: true },
           });
-        }
+
+          if (!account || account.userId !== ctx.session.user.id) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Account not found.",
+            });
+          }
+
+          if (!account.mainAccountForUser) {
+            return account;
+          }
+
+          const categories = await tr.budgetCategory.findMany({
+            where: { user: { id: ctx.session.user.id } },
+            include: { expenses: true },
+          });
+
+          const totalCategoryAmount = categories.reduce((acc, curr) => {
+            const currExpenses = curr.expenses.reduce((acc, curr) => {
+              return acc + +curr.amount;
+            }, 0);
+
+            return acc + +curr.startOfPeriodAmount - currExpenses;
+          }, 0);
+
+          return {
+            ...account,
+            initAmount: new Prisma.Decimal(
+              +account.initAmount + totalCategoryAmount
+            ),
+          };
+        });
 
         return result;
       } catch (error) {
@@ -88,6 +151,7 @@ export const expensesAccountRouter = createTRPCRouter({
             accountOrder: maxAccountOrder + 1,
             name: input.name,
             initAmount: input.initValue,
+            currentAmount: input.initValue,
             user: { connect: { id: ctx.session.user.id } },
           },
         });

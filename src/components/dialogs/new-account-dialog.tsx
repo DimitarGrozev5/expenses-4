@@ -25,6 +25,7 @@ const NewAccountDialog: React.FC<Props> = ({ dialogControl }) => {
     isLoading: addingAccount,
     isSuccess: addedAccount,
     error,
+    reset: resetMutation,
   } = api.accounts.addAccount.useMutation();
 
   const queryClient = useQueryClient();
@@ -36,8 +37,9 @@ const NewAccountDialog: React.FC<Props> = ({ dialogControl }) => {
 
       dialogControl.handleClose();
       resetForm();
+      resetMutation();
     }
-  }, [addedAccount, dialogControl, queryClient, resetForm]);
+  }, [addedAccount, dialogControl, queryClient, resetForm, resetMutation]);
 
   const submitHandler = handleSubmit((data: NewAccountFormData) => {
     addAccount(data);
