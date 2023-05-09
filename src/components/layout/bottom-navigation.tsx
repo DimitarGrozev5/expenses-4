@@ -77,7 +77,7 @@ const BottomNavigation: React.FC = () => {
           {totalDeficit !== null && (
             <div
               className={clsx(
-                "absolute -right-1 top-0 rounded-full text-sm p-0.5 border border-red-200",
+                "absolute -right-1 top-0 rounded-full text-sm p-0.5 border border-red-200 shadow-sm",
                 totalDeficit < 0
                   ? "bg-green-50 text-green-500"
                   : "bg-red-50 text-red-500"
