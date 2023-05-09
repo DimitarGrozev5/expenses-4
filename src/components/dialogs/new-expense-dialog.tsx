@@ -48,9 +48,11 @@ const NewExpenseDialog: React.FC<Props> = ({
         api.categories.getById,
         categoryId ?? ""
       );
+      const invalidationKeys4 = getQueryKey(api.accounts.getAll);
       void queryClient.invalidateQueries(invalidationKeys1);
       void queryClient.invalidateQueries(invalidationKeys2);
       void queryClient.invalidateQueries(invalidationKeys3);
+      void queryClient.invalidateQueries(invalidationKeys4);
 
       dialogControl.handleClose();
       resetForm();
