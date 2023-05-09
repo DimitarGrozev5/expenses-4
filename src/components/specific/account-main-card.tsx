@@ -6,6 +6,7 @@ import { useDialog } from "../layout/dialog";
 import AddFundsToAccountDialog from "../dialogs/add-funds-to-account-dialog";
 import { api } from "~/utils/api";
 import { Skeleton } from "@mui/material";
+import { useMemo } from "react";
 
 type Props = {
   forAccount: ExpenseAccount;
@@ -39,8 +40,14 @@ const AccountMainCard: React.FC<Props> = ({ forAccount }) => {
     initialData: forAccount,
   });
 
+  // Calucalte difference between expected amount and current amount
+  const deficit = useMemo(() => {
+    return +account.initAmount - +account.credit - +account.currentAmount;
+  }, [account.credit, account.currentAmount, account.initAmount]);
+
   // Setup modal controls
   const addFundsDialogCtrl = useDialog();
+  const setFundsDialogCtrl = useDialog();
 
   return (
     <>
@@ -53,8 +60,18 @@ const AccountMainCard: React.FC<Props> = ({ forAccount }) => {
 
       {account && (
         <Card noPadding>
-          <div className="bg-gray-500 py-1 text-center text-gray-100">
-            {account.name}
+          <div className="flex bg-gray-500 text-center text-gray-100">
+            <div className="flex-1 py-1">{account.name}</div>
+            <div
+              className={clsx(
+                "px-2 py-1 font-bold",
+                deficit <= 0
+                  ? "bg-green-700 text-green-100"
+                  : "bg-red-700 text-red-100"
+              )}
+            >
+              {(-1 * deficit).toFixed(2)}
+            </div>
           </div>
 
           <div className="flex">
@@ -100,6 +117,9 @@ const AccountMainCard: React.FC<Props> = ({ forAccount }) => {
           <div className="flex justify-around bg-gray-300 px-4 py-2">
             <ButtonPlain onClick={addFundsDialogCtrl.handleOpen}>
               Add funds
+            </ButtonPlain>
+            <ButtonPlain onClick={setFundsDialogCtrl.handleOpen}>
+              Set current
             </ButtonPlain>
           </div>
         </Card>
