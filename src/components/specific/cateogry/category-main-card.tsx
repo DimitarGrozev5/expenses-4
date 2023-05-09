@@ -6,6 +6,8 @@ import { type BudgetCategoryWithExpenses } from "prisma/types";
 import CategorySpent from "./category-spent";
 import CategoryMonthlyOverview from "./category-monthly-overview";
 import CategoryDailyOverview from "./caegory-daily-tracker";
+import ButtonPlain from "~/components/layout/button-plain";
+import NewExpenseDialog from "~/components/dialogs/new-expense-dialog";
 
 type Props = {
   forCategory: BudgetCategoryWithExpenses;
@@ -22,7 +24,7 @@ const CategoryMainCard: React.FC<Props> = ({ forCategory }) => {
   });
 
   // Setup modal controls
-  // const addFundsDialogCtrl = useDialog();
+  const addExpenseDialogCtrl = useDialog();
 
   return (
     <>
@@ -40,18 +42,20 @@ const CategoryMainCard: React.FC<Props> = ({ forCategory }) => {
           <CategorySpent category={category} />
           <CategoryMonthlyOverview category={category} />
 
-          {/* <div className="flex justify-around bg-gray-300 px-4 py-2">
-            <ButtonPlain onClick={addFundsDialogCtrl.handleOpen}>
-              Add funds
+          <div className="flex justify-around bg-gray-300 px-4 py-2">
+            <ButtonPlain onClick={addExpenseDialogCtrl.handleOpen}>
+              Add Expense
             </ButtonPlain>
-          </div> */}
+          </div>
         </Card>
       )}
 
-      {/* <AddFundsToAccountDialog
-        dialogControl={addFundsDialogCtrl}
-        accountId={category?.id ?? forCategory.id}
-      /> */}
+      {category && (
+        <NewExpenseDialog
+          dialogControl={addExpenseDialogCtrl}
+          categoryId={category.id}
+        />
+      )}
     </>
   );
 };

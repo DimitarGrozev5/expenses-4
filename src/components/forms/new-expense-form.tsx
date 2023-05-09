@@ -5,6 +5,7 @@ import { VerticalSelectCategory1 } from "../inputs/select-category/vertical-sele
 import Spacer from "../layout/spacer";
 import { VerticalSelectAccount2 } from "../inputs/select-account/vertical-select-account";
 import SelectReasons from "../inputs/select-reasons";
+import { api } from "~/utils/api";
 
 export const NewExpenseSchema = z.object({
   createdOn: z.date(),
@@ -18,9 +19,18 @@ export type NewExpenseFormData = z.infer<typeof NewExpenseSchema>;
 
 type Props = {
   formControl: Control<NewExpenseFormData>;
+  hideCategoryIdForm?: boolean;
+  categoryId?: string | null;
 };
 
-const NewExpenseForm: React.FC<Props> = ({ formControl }) => {
+const NewExpenseForm: React.FC<Props> = ({
+  formControl,
+  hideCategoryIdForm,
+  categoryId,
+}) => {
+  const { data: category } = api.categories.getById.useQuery(categoryId || "", {
+    enabled: !!categoryId,
+  });
   return (
     <>
       <Controller
@@ -46,24 +56,28 @@ const NewExpenseForm: React.FC<Props> = ({ formControl }) => {
       />
       <Spacer gap={1} />
 
-      <Controller
-        control={formControl}
-        name="categoryId"
-        rules={{
-          validate: (val) => {
-            if (val === null) return "Please select a category";
-          },
-        }}
-        render={({ field: { value, onChange }, fieldState: { error } }) => (
-          <VerticalSelectCategory1
-            selectedCategory={value}
-            onChange={onChange}
-            label="For Category:"
-            error={!!error}
-            helperText={error?.message}
-          />
-        )}
-      />
+      {hideCategoryIdForm ? (
+        <div className="font-bold">For category: {category?.name || "..."}</div>
+      ) : (
+        <Controller
+          control={formControl}
+          name="categoryId"
+          rules={{
+            validate: (val) => {
+              if (val === null) return "Please select a category";
+            },
+          }}
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
+            <VerticalSelectCategory1
+              selectedCategory={value}
+              onChange={onChange}
+              label="For Category:"
+              error={!!error}
+              helperText={error?.message}
+            />
+          )}
+        />
+      )}
       <Spacer gap={1} />
 
       <Controller

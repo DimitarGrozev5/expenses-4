@@ -10,9 +10,12 @@ import NewExpenseForm, {
   type NewExpenseFormData,
 } from "../forms/new-expense-form";
 
-type Props = { dialogControl: DialogControl };
+type Props = { dialogControl: DialogControl; categoryId?: string | null };
 
-const NewExpenseDialog: React.FC<Props> = ({ dialogControl }) => {
+const NewExpenseDialog: React.FC<Props> = ({
+  dialogControl,
+  categoryId = null,
+}) => {
   const {
     control,
     handleSubmit,
@@ -20,8 +23,8 @@ const NewExpenseDialog: React.FC<Props> = ({ dialogControl }) => {
   } = useForm<NewExpenseFormData>({
     defaultValues: {
       createdOn: new Date(),
-      categoryId: null,
       fromAcountId: null,
+      categoryId,
       amount: 0,
       reasons: [],
     },
@@ -67,7 +70,11 @@ const NewExpenseDialog: React.FC<Props> = ({ dialogControl }) => {
         </ButtonPlain>
       }
     >
-      <NewExpenseForm formControl={control} />
+      <NewExpenseForm
+        formControl={control}
+        hideCategoryIdForm={!!categoryId}
+        categoryId={categoryId}
+      />
 
       {error && <p className="text-red-500">{error.message}</p>}
     </Dialog>
