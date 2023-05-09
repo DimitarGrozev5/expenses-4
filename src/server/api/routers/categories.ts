@@ -90,6 +90,7 @@ export const categoriesRouter = createTRPCRouter({
               montlyInput: input.montlyInput,
               startOfPeriodAmount: input.initAmount,
               trackDaily: input.trackDaily,
+              trackMonthly: input.trackMonthly,
               user: { connect: { id: ctx.session.user.id } },
             },
           });

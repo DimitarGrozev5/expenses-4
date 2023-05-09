@@ -81,10 +81,11 @@ model ExpenseAccount {
     userId String
     user   User   @relation("ExpenseAccountForUser", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-    name         String
-    initAmount   Decimal @default(0)
-    credit       Decimal @default(0)
-    accountOrder Int
+    name          String
+    initAmount    Decimal @default(0)
+    currentAmount Decimal @default(0)
+    credit        Decimal @default(0)
+    accountOrder  Int
 
     mainAccountForUser User? @relation("MainAccount")
 
@@ -101,7 +102,9 @@ model BudgetCategory {
     montlyInput         Decimal
     startOfPeriodAmount Decimal
     categoryOrder       Int
-    trackDaily          Boolean
+
+    trackDaily   Boolean
+    trackMonthly Boolean // Tracks the monthly progress trough the expenses - wheter you are spending to fast
 
     expenses Expense[]
 

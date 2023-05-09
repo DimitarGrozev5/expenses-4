@@ -23,6 +23,7 @@ const NewCategoryDialog: React.FC<Props> = ({ dialogControl }) => {
       montlyInput: 0,
       initAmount: 0,
       trackDaily: false,
+      trackMonthly: true,
     },
   });
 

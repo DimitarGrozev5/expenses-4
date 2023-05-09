@@ -13,6 +13,7 @@ export const NewCategorySchema = z.object({
     .number()
     .gte(0, "Initial amount must be greater than or equal to 0"),
   trackDaily: z.boolean(),
+  trackMonthly: z.boolean(),
 });
 
 export type NewCategoryFormData = z.infer<typeof NewCategorySchema>;
@@ -99,6 +100,18 @@ const NewCategoryForm: React.FC<Props> = ({ formControl }) => {
         render={({ field: { value, onChange } }) => (
           <Switch
             label="Track daily expenses"
+            checked={value}
+            onChange={onChange}
+          />
+        )}
+      />
+
+      <Controller
+        control={formControl}
+        name="trackMonthly"
+        render={({ field: { value, onChange } }) => (
+          <Switch
+            label="Track spending progress trough the month"
             checked={value}
             onChange={onChange}
           />
