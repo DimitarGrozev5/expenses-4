@@ -9,12 +9,28 @@ import ChecklistIcon from "@mui/icons-material/Checklist";
 
 import { useRouter } from "next/router";
 import clsx from "clsx";
+import { api } from "~/utils/api";
+import { useMemo } from "react";
 
 const BottomNavigation: React.FC = () => {
   const { data } = useSession();
   const isLoggedIn = !!data;
 
   const path = useRouter().pathname;
+
+  // Get account data
+  const { data: accounts } = api.accounts.getAll.useQuery();
+
+  // Calculate total deficit on all accounts
+  const totalDeficit = useMemo(() => {
+    if (!accounts) {
+      return null;
+    }
+
+    return accounts.reduce((acc, curr) => {
+      return acc + +curr.initAmount - +curr.credit - +curr.currentAmount;
+    }, 0);
+  }, [accounts]);
 
   return isLoggedIn ? (
     <nav className="fixed bottom-0 left-0 right-0 flex h-20 items-stretch justify-between bg-gray-200 shadow-[0_-5px_50px_-15px_rgba(0,0,0,0.3)]">
@@ -45,7 +61,7 @@ const BottomNavigation: React.FC = () => {
             <span>Budget</span>
           </Link>
         </li>
-        <li className="flex items-stretch justify-center p-2">
+        <li className="relative flex items-stretch justify-center p-2">
           <Link
             href="/accounts"
             className={clsx(
@@ -57,6 +73,19 @@ const BottomNavigation: React.FC = () => {
             <SavingsIcon />
             <span>Accounts</span>
           </Link>
+
+          {totalDeficit !== null && (
+            <div
+              className={clsx(
+                "absolute -right-1 top-0 rounded-full text-sm p-0.5 border border-red-200",
+                totalDeficit < 0
+                  ? "bg-green-50 text-green-500"
+                  : "bg-red-50 text-red-500"
+              )}
+            >
+              {(-1 * totalDeficit).toFixed(2)}
+            </div>
+          )}
         </li>
         <li className="flex items-stretch justify-center p-2">
           <Link
