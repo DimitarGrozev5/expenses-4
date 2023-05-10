@@ -47,6 +47,13 @@ const BudgetPage: NextPage = () => {
 
       <SpeedDial
         actions={[
+          categories && categories.length > 0
+            ? {
+                label: "Restart budget Period",
+                icon: <AddIcon />,
+                action: newCategoryDialogCtrl.handleOpen,
+              }
+            : null,
           {
             label: "Add category",
             icon: <AddIcon />,
